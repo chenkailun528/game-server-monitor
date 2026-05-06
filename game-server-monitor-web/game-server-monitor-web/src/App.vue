@@ -23,10 +23,10 @@
         <el-table-column prop="ip" label="IP" width="140" />
         <el-table-column prop="online" label="在线人数" width="110" />
         <el-table-column prop="cpu" label="CPU" width="100">
-          <template #default="scope">{{ Number(scope.row.cpu).toFixed(2) }}%</template>
+          <template #default="scope">{{ Number(scope.row.cpu || 0).toFixed(2) }}%</template>
         </el-table-column>
         <el-table-column prop="memory" label="内存" width="100">
-          <template #default="scope">{{ Number(scope.row.memory).toFixed(2) }}%</template>
+          <template #default="scope">{{ Number(scope.row.memory || 0).toFixed(2) }}%</template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="120">
           <template #default="scope">
@@ -74,16 +74,15 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const API_BASE = 'http://127.0.0.1:8080/api'
-
 const servers = ref([])
 const alerts = ref([])
 const logs = ref([])
 const keyword = ref('error')
 
-const totalOnline = computed(() => servers.value.reduce((sum, item) => sum + item.online, 0))
+const totalOnline = computed(() => servers.value.reduce((sum, item) => sum + (item.online || 0), 0))
 const abnormalCount = computed(() => servers.value.filter(item => item.status !== 'running').length)
 
 function statusType(status) {
@@ -120,6 +119,7 @@ async function searchLogs() {
 }
 
 async function restart(serverId) {
+  await ElMessageBox.confirm(`确认重启服务器 ${serverId}？`, '确认操作', { confirmButtonText: '确认', cancelButtonText: '取消', type: 'warning' })
   await request(`${API_BASE}/servers/${serverId}/restart`, { method: 'POST' })
   ElMessage.success(`服务器 ${serverId} 重启操作已提交`)
   await loadAll()
@@ -132,7 +132,11 @@ async function maintenance(serverId) {
 }
 
 async function loadAll() {
-  await Promise.all([loadServers(), loadAlerts(), searchLogs()])
+  try {
+    await Promise.all([loadServers(), loadAlerts(), searchLogs()])
+  } catch (err) {
+    ElMessage.error(`加载失败：${err.message}。请确认 Go 后端已启动，并监听 127.0.0.1:8080`)
+  }
 }
 
 onMounted(loadAll)

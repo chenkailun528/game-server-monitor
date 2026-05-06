@@ -1,0 +1,4 @@
+2026-05-02 10:00:01 INFO server start success
+2026-05-02 10:01:12 WARN player reconnect
+2026-05-02 10:02:33 ERROR mysql timeout
+2026-05-02 10:04:15 ERROR cross server rpc timeout
