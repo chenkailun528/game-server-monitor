@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"time"
+
 	"game-server-monitor/model"
 	"game-server-monitor/repository"
 )
@@ -46,8 +47,12 @@ func ReportMetric(req model.MetricReport) {
 }
 
 func calcStatus(cpu, memory float64) string {
-	if cpu >= 90 || memory >= 90 { return "down" }
-	if cpu >= 80 || memory >= 85 { return "warning" }
+	if cpu >= 90 || memory >= 90 {
+		return "down"
+	}
+	if cpu >= 80 || memory >= 85 {
+		return "warning"
+	}
 	return "running"
 }
 
@@ -84,8 +89,11 @@ func StartHeartbeatChecker() {
 
 func SearchLogFile(path string, keyword string, limit int) ([]string, error) {
 	f, err := os.Open(path)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	defer f.Close()
+
 	var lines []string
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -94,13 +102,19 @@ func SearchLogFile(path string, keyword string, limit int) ([]string, error) {
 			lines = append(lines, line)
 		}
 	}
-	if err := scanner.Err(); err != nil { return nil, err }
-	if len(lines) > limit { lines = lines[len(lines)-limit:] }
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	if len(lines) > limit {
+		lines = lines[len(lines)-limit:]
+	}
 	return lines, nil
 }
 
 func EnsureDemoLog() {
-	if _, err := os.Stat("./server.log"); err == nil { return }
+	if _, err := os.Stat("./server.log"); err == nil {
+		return
+	}
 	content := []string{
 		"2026-05-02 10:00:01 INFO server start success",
 		"2026-05-02 10:01:12 WARN player reconnect",

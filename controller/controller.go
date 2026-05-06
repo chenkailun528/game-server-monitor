@@ -2,8 +2,10 @@ package controller
 
 import (
 	"net/http"
+
 	"game-server-monitor/model"
 	"game-server-monitor/service"
+
 	"github.com/gin-gonic/gin"
 )
 

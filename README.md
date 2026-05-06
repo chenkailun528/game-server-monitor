@@ -1,42 +1,25 @@
 # Game Server Monitor
 
-A lightweight game server monitoring backend built with Go + Gin.
+Go + Gin 后端，已加入 CORS 处理，支持 Vue 前端访问。
 
-## Features
+## 修复内容
 
-- Server list
-- Metric report API
-- CPU / memory alert
-- Heartbeat check
-- Log search
-- Mock restart / maintenance mode
-- Operation logs
+- router/router.go 增加跨域中间件
+- 支持前端地址：
+  - http://127.0.0.1:5173
+  - http://localhost:5173
 
-## Project structure
-
-```text
-game-server-monitor/
-├── main.go
-├── router/
-├── controller/
-├── service/
-├── model/
-├── repository/
-└── mock/
-```
-
-## Run
+## 启动
 
 ```bash
 go mod tidy
 go run main.go
 ```
 
-## Test
+## 测试
 
 ```bash
 curl http://127.0.0.1:8080/api/servers
 curl http://127.0.0.1:8080/api/alerts
 curl "http://127.0.0.1:8080/api/logs?keyword=error"
-curl -X POST http://127.0.0.1:8080/api/servers/s1001/restart
 ```
